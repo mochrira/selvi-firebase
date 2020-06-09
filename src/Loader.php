@@ -16,20 +16,26 @@ class Loader {
 
     private static $dbConfig;
     private static $firebaseFactory;
+    private static $clientMigrations = [];
 
-    public static function setup($dbConfig, $serviceAccountFile, $dbMigration) {
+    public static function setup($dbConfig, $serviceAccountFile) {
         self::$dbConfig = $dbConfig;
-        $db = Database::add(self::$dbConfig, 'main');
-        if(isset($dbMigration['main'])) {
-            foreach($dbMigration['main'] as $path) {
-                $db->addMigration($path);
-            }
-        }
+        $db = Database::add(self::$dbConfig, 'main')->addMigration(__DIR__.'/../migrations');
         self::$firebaseFactory = (new Factory())->withServiceAccount($serviceAccountFile);
     }
 
     public static function getDatabase() {
         return Database::get('main');
+    }
+
+    public static function addMainMigration($path) {
+        self::getDatabase()->addMigration($path);
+    }
+
+    public static function addClientMigration($path) {
+        if(!in_array($path, self::$clientMigrations)) {
+            self::$clientMigrations[] = $path;
+        }
     }
 
     private static $instance;
@@ -73,7 +79,6 @@ class Loader {
         if(!$token) {
             $token = $input->header('Authorization');
         }
-
         try {
             $this->firebaseToken = $this->firebaseAuth->verifyIdToken($token);
         } catch(\Exception $e) {
@@ -116,13 +121,9 @@ class Loader {
     }
 
     function setupDatabase() {
-        $db = Database::add(
-            array_merge(self::$dbConfig, ['database' => $this->lembagaAktif->basisData]), 'client'
-        )->addMigration();
-        if(isset($dbMigration['client'])) {
-            foreach($dbMigration['client'] as $path) {
-                $db->addMigration($path);
-            }
+        $db = Database::add(array_merge(self::$dbConfig, ['database' => $this->lembagaAktif->basisData]), 'client');
+        foreach(self::$clientMigrations as $path) {
+            $db->addMigration($path);
         }
     }
 
