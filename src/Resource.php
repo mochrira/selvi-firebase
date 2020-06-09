@@ -1,9 +1,9 @@
 <?php 
 
-namespace Firebase;
+namespace Selvi\Firebase;
 
 use Selvi\Resource as SelviResource;
-use Firebase\Loader as Firebase;
+use Selvi\Firebase\Loader as Firebase;
 
 class Resource extends SelviResource {
 

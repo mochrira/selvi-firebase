@@ -1,6 +1,6 @@
 <?php 
 
-namespace Firebase;
+namespace Selvi\Firebase;
 
 use Selvi\Factory as SelviFactory;
 use Selvi\Database\Manager as Database;
@@ -9,8 +9,8 @@ use Selvi\Exception;
 use Kreait\Firebase\Factory;
 use Kreait\Firebase\ServiceAccount;
 
-use Firebase\Models\Pengguna;
-use Firebase\Models\Lembaga;
+use Selvi\Firebase\Models\Pengguna;
+use Selvi\Firebase\Models\Lembaga;
 
 class Loader {
 

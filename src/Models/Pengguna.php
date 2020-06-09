@@ -1,6 +1,6 @@
 <?php 
 
-namespace Firebase\Models;
+namespace Selvi\Firebase\Models;
 use Selvi\Model;
 
 class Pengguna extends Model {
