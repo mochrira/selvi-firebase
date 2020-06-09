@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ff1c82be669b6664c2468ebb22c98b9f",
+    "content-hash": "745fc8ae396a46fc8ca6f1d4b9a8d3a7",
     "packages": [
         {
             "name": "fig/http-message-util",
@@ -1354,6 +1354,32 @@
                 "uri"
             ],
             "time": "2017-06-14T03:57:53+00:00"
+        },
+        {
+            "name": "selvi/framework",
+            "version": "0.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://repository.wajek.id/selvi/framework.git",
+                "reference": "b9c8144d7d146f78a48ddbe309b2b119daadb71f"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "helpers/Response.php"
+                ],
+                "psr-4": {
+                    "Selvi\\": "src/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "mochrira",
+                    "email": "mochrira@gmail.com"
+                }
+            ],
+            "description": "Framework untuk membuat API",
+            "time": "2020-06-09T05:25:31+00:00"
         },
         {
             "name": "symfony/polyfill-intl-idn",
