@@ -86,8 +86,9 @@ class Loader {
         $pengguna = SelviFactory::load(Pengguna::class, [], 'pengguna');
         $this->penggunaAktif = $pengguna->row([['uid', $uid]]);
         if(!$this->penggunaAktif) {
-            if(!$pengguna->insert('pengguna', [
-                'uid' => $uid
+            if(!$pengguna->insert([
+                'uid' => $uid,
+                'email' => $this->firebaseToken->getClaim('email')
             ])) {
                 Throw new Exception('Gagal menambahkan pengguna', 'firebase-auth/insert-failed', 500);
             }
