@@ -1,0 +1,13 @@
+{
+    "name": "selvi/firebase",
+    "description": "Package to integrate firebase with selvi framework",
+    "authors": [
+        {
+            "name": "mochrira",
+            "email": "mochrira@gmail.com"
+        }
+    ],
+    "require": {
+        "kreait/firebase-php": "^5.3"
+    }
+}
