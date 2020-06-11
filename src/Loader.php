@@ -11,6 +11,7 @@ use Kreait\Firebase\ServiceAccount;
 
 use Selvi\Firebase\Models\Pengguna;
 use Selvi\Firebase\Models\Lembaga;
+use Selvi\Firebase\Models\Origin;
 
 class Loader {
 
@@ -51,6 +52,7 @@ class Loader {
     public $firebaseMessaging;
     public $firebaseToken;
 
+    public $originAktif;
     public $penggunaAktif;
     public $lembagaAktif;
 
@@ -66,11 +68,28 @@ class Loader {
     }
 
     function validateRequest() {
+        $this->validateOrigin();
         $this->validateToken();
         $this->validatePengguna();
         $this->validatePhoneNumber();
         $this->validateLembaga();
         $this->setupDatabase();
+    }
+
+    function validatePublicRequest() {
+        $this->validateOrigin();
+        $this->validateLembaga();
+        $this->setupDatabase();
+    }
+
+    function validateOrigin() {
+        $input = SelviFactory::load('input');
+        $input_origin = str_replace('https://', '', str_replace('http://', '', $input->server('HTTP_ORIGIN')));
+        $origin = SelviFactory::load(Origin::class, [], 'origin');
+        $this->originAktif = $origin->row([['origin', $input_origin]]);
+        if(!$this->originAktif) {
+            Throw new Exception('Origin not allowed to access this resources', 'app/invalid-origin', 400);
+        }
     }
 
     function validateToken() {
@@ -108,9 +127,16 @@ class Loader {
     }
 
     function validateLembaga() {
-        $idLembaga = $this->penggunaAktif->idLembaga;
-        if(!$idLembaga) {
-            Throw new Exception('Pengguna tidak terdaftar pada lembaga manapun', 'firebase-auth/invalid-lembaga', 400);
+        if($this->penggunaAktif) {
+            $idLembaga = $this->penggunaAktif->idLembaga;
+            if(!$idLembaga) {
+                Throw new Exception('Pengguna tidak terdaftar pada lembaga manapun', 'firebase-auth/invalid-lembaga', 400);
+            }
+        } else {
+            $idLembaga = $this->originAktif->idLembaga;
+            if(!$idLembaga) {
+                Throw new Exception('Pengguna tidak terdaftar pada lembaga manapun', 'firebase-auth/invalid-lembaga', 400);
+            }
         }
 
         $lembaga = SelviFactory::load(Lembaga::class, [], 'lembaga');
