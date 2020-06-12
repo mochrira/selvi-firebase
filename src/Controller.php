@@ -10,7 +10,6 @@ class Controller extends SelviController {
     private $firebase;
 
     public function __construct() {
-        parent::__construct();
         $this->firebase = Firebase::getInstance();
     }
 
