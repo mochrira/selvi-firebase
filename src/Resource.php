@@ -9,8 +9,8 @@ class Resource extends SelviResource {
 
     private $firebase;
 
-    public function __construct() {
-        parent::__construct();
+    public function __construct($autoloadModel = true) {
+        parent::__construct($autoloadModel);
         $this->firebase = Firebase::getInstance();
     }
 
