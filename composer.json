@@ -15,7 +15,7 @@
     },
     "require": {
         "kreait/firebase-php": "^5.3",
-        "selvi/framework": "^0.2.0"
+        "selvi/framework": "^0.3.0"
     },
     "autoload": {
         "psr-4": {
