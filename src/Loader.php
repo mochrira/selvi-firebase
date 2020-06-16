@@ -18,11 +18,26 @@ class Loader {
     private static $dbConfig;
     private static $firebaseFactory;
     private static $clientMigrations = [];
+    private static $validateOrigin = false;
 
-    public static function setup($dbConfig, $serviceAccountFile) {
-        self::$dbConfig = $dbConfig;
-        $db = Database::add(self::$dbConfig, 'main')->addMigration(__DIR__.'/../migrations');
-        self::$firebaseFactory = (new Factory())->withServiceAccount($serviceAccountFile);
+    /**
+     * Config Structure
+     * ['dbConfig'] => Database Configuration
+     *      ['host'] => Database Host
+     *      ['username'] => Database Username
+     *      ['password'] => Database Password
+     *      ['database'] => Database Name
+     * ['serviceAccountFile'] => Service account location
+     * ['validateOrigin'] => Validate origin or not (boolean)
+     */
+
+    public static function setup($config) {
+        self::$dbConfig = $config['dbConfig'];
+        Database::add(self::$dbConfig, 'main')
+            ->addMigration(__DIR__.'/../migrations');
+
+        self::$firebaseFactory = (new Factory())->withServiceAccount($config['serviceAccountFile']);
+        self::$validateOrigin = $config['validateOrigin'];
     }
 
     public static function getDatabase() {
@@ -68,7 +83,9 @@ class Loader {
     }
 
     function validateRequest() {
-        $this->validateOrigin();
+        if(self::$validateOrigin == true) {
+            $this->validateOrigin();
+        }
         $this->validateToken();
         $this->validatePengguna();
         $this->validatePhoneNumber();
