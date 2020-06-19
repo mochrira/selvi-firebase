@@ -15,7 +15,7 @@ class VerifyPhone {
         self::$key = isset($config['key']) ? $config['key'] : 'RDF?jq8eec';
         self::$iv = isset($config['iv']) ? $config['iv'] : "6akdpd29q9x65zqx";
         Route::post('/verify/phone', '\\Selvi\\Firebase\\Controllers\\VerifyPhoneController@getToken');
-        Route::post('/verify/phone/verify', '\\Selvi\\Firebase\\Controllers\\VerifyPhoneController@verifyToken');
+        Route::patch('/verify/phone', '\\Selvi\\Firebase\\Controllers\\VerifyPhoneController@verifyToken');
     }
 
 }
