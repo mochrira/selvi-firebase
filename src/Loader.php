@@ -12,6 +12,7 @@ use Kreait\Firebase\ServiceAccount;
 use Selvi\Firebase\Models\Pengguna;
 use Selvi\Firebase\Models\Lembaga;
 use Selvi\Firebase\Models\Origin;
+use Selvi\Firebase\Models\Akses;
 
 class Loader {
 
@@ -70,12 +71,14 @@ class Loader {
     public $originAktif;
     public $penggunaAktif;
     public $lembagaAktif;
+    public $aksesAktif;
 
     function __construct() {
         $this->firebaseAuth = self::$firebaseFactory->createAuth();
         $this->firebaseMessaging = self::$firebaseFactory->createMessaging();
         SelviFactory::load(Pengguna::class, [], 'pengguna');
         SelviFactory::load(Lembaga::class, [], 'lembaga');
+        SelviFactory::load(Akses::class, [], 'akses');
     }
 
     public function getFactory() {
@@ -89,6 +92,7 @@ class Loader {
         $this->validateToken();
         $this->validatePengguna();
         $this->validatePhoneNumber();
+        $this->validateAkses();
         $this->validateLembaga();
         $this->setupDatabase();
     }
@@ -143,9 +147,21 @@ class Loader {
         }
     }
 
+    function validateAkses() {
+        $akses = SelviFactory::load(Akses::class, [], 'akses');
+        $this->aksesAktif = $akses->row([
+            ['uid', $this->penggunaAktif->uid], 
+            ['isDefault', true]
+        ]);
+
+        if(!$this->aksesAktif) {
+            Throw new Exception('Anda belum memiliki akses ke lembaga manapun', 'firebase-auth/invalid-akses', 400);
+        }
+    }
+
     function validateLembaga() {
-        if($this->penggunaAktif) {
-            $idLembaga = $this->penggunaAktif->idLembaga;
+        if($this->aksesAktif) {
+            $idLembaga = $this->aksesAktif->idLembaga;
             if(!$idLembaga) {
                 Throw new Exception('Pengguna tidak terdaftar pada lembaga manapun', 'firebase-auth/invalid-lembaga', 400);
             }
