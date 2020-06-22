@@ -26,7 +26,7 @@ class LembagaController extends Resource {
     }
 
     protected function validateData() {
-        $data = json_decode($this->input->raw());
+        $data = json_decode($this->input->raw(), true);
         if(!isset($data['nmLembaga'])) {
             Throw new Exception('Periksa kembali isian anda', 'lembaga/insert-failed', 400);
         }
