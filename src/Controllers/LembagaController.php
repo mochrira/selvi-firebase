@@ -1,6 +1,7 @@
 <?php 
 
 namespace Selvi\Firebase\Controllers;
+use Selvi\Database\Migration;
 use Selvi\Firebase\Resource;
 use Selvi\Firebase\Loader as Firebase;
 use Selvi\Firebase\Models\Lembaga;
@@ -61,6 +62,17 @@ class LembagaController extends Resource {
                 'idLembaga' => $object->idLembaga,
                 'tipe' => 'OWNER'
             ]);
+        } catch(Exception $e) {
+            Throw new Exception('Gagal menambahkan akses pengguna', 'lembaga/insert-akses-failed', 500);
+        }
+
+        try {
+            $this->validateAkses();
+            $this->validateLembaga();
+            $this->setupDatabase();
+
+            $this->load(Migration::class, 'Migration');
+            $this->Migration->run('client', 'up');
         } catch(Exception $e) {
             Throw new Exception('Gagal menambahkan akses pengguna', 'lembaga/insert-akses-failed', 500);
         }
