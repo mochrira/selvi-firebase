@@ -67,7 +67,9 @@ class LembagaController extends Resource {
     }
 
     private function generateDbName($nmLembaga) {
-        return Firebase::$dbPrefix.str_replace(' ', '', $nmLembaga).'_'.substr(md5(time()), 0, 6);
+        $dbName = preg_replace('/[^a-zA-Z0-9\']/', '', $nmLembaga);
+        $dbName = str_replace("'", '', $dbName);
+        return Firebase::$dbPrefix.substr(str_replace(' ', '', $dbName), 0, 5).'_'.substr(md5(time()), 0, 5);
     }
 
 }
