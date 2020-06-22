@@ -69,7 +69,7 @@ class LembagaController extends Resource {
     private function generateDbName($nmLembaga) {
         $dbName = preg_replace('/[^a-zA-Z0-9\']/', '', $nmLembaga);
         $dbName = str_replace("'", '', $dbName);
-        return Firebase::$dbPrefix.substr(str_replace(' ', '', $dbName), 0, 5).'_'.substr(md5(time()), 0, 5);
+        return strtolower(Firebase::$dbPrefix.substr(str_replace(' ', '', $dbName), 0, 5).'_'.substr(md5(time()), 0, 5));
     }
 
 }
