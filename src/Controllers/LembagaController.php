@@ -56,11 +56,10 @@ class LembagaController extends Resource {
     protected function afterInsert($object) {
         try {
             $this->load(Akses::class, 'Akses');
-            $insertAkses = $this->Akses->insert([
+            $this->Akses->insert([
                 'uid' => $this->penggunaAktif->uid,
                 'idLembaga' => $object->idLembaga,
-                'tipe' => 'OWNER',
-                'isDefault' => true
+                'tipe' => 'OWNER'
             ]);
         } catch(Exception $e) {
             Throw new Exception('Gagal menambahkan akses pengguna', 'lembaga/insert-akses-failed', 500);
