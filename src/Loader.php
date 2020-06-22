@@ -20,6 +20,7 @@ class Loader {
     private static $firebaseFactory;
     private static $clientMigrations = [];
     private static $validateOrigin = false;
+    public static $dbPrefix = '';
 
     /**
      * Config Structure
@@ -39,6 +40,7 @@ class Loader {
 
         self::$firebaseFactory = (new Factory())->withServiceAccount($config['serviceAccountFile']);
         self::$validateOrigin = $config['validateOrigin'];
+        self::$dbPrefix = $config['dbPrefix'];
     }
 
     public static function getDatabase() {
