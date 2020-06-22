@@ -72,7 +72,7 @@ class LembagaController extends Resource {
             $this->setupDatabase();
 
             $this->load(Migration::class, 'Migration');
-            $this->Migration->run('client', 'up');
+            $this->Migration->run('client', 'up', '--silent');
         } catch(Exception $e) {
             Throw new Exception('Gagal menambahkan akses pengguna', 'lembaga/insert-akses-failed', 500);
         }
