@@ -29,16 +29,24 @@ class LembagaController extends Resource {
     protected function validateData() {
         $data = json_decode($this->input->raw(), true);
         if(!isset($data['nmLembaga'])) {
-            Throw new Exception('Periksa kembali isian anda', 'lembaga/insert-failed', 400);
+            Throw new Exception('Periksa kembali isian anda', 'lembaga/invalid-request', 400);
         }
         if(!isset($data['alamat'])) {
-            Throw new Exception('Periksa kembali isian anda', 'lembaga/insert-failed', 400);
+            Throw new Exception('Periksa kembali isian anda', 'lembaga/invalid-request', 400);
         }
         if(!isset($data['kota'])) {
-            Throw new Exception('Periksa kembali isian anda', 'lembaga/invalid-data', 400);
+            Throw new Exception('Periksa kembali isian anda', 'lembaga/invalid-request', 400);
         }
 
         if($this->input->method() == 'POST') {
+            $this->load(Akses::class, 'Akses');
+            $cek = $this->Akses->row([['uid', $this->penggunaAktif->uid]]);
+            if($cek !== null) {
+                if(!isset($data['kota'])) {
+                    Throw new Exception('Anda telah tergabung dalam lembaga', 'lembaga/akses-exist', 400);
+                }
+            }
+
             try {
                 $dbName = $this->generateDbName($data['nmLembaga']);
                 $db = Firebase::getDatabase();
