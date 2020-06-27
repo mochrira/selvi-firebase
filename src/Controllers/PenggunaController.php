@@ -17,14 +17,25 @@ class PenggunaController extends Resource {
         $this->validateRequest();
     }
 
-    function validateData() {
-        $data = json_decode($this->input->raw(), true);
-        if(!isset($data)) {
-            Throw new Exception('Invalid request', 'pengguna/invalid-request', 400);
-        } else {
-            if($this->input->method() == 'POST') {
-                return $data;
+    protected function afterUpdate($object = null) {
+        if(!isset($object)) {
+            Throw new Exception('pengguna/update-failed', 'Gagal mengambil object yang diupdate');
+        }
+
+        try {
+            $dataUpdate = [];
+            if(isset($object->displayName)) {
+                $dataUpdate['displayName'] = $object->displayName;
             }
+
+            if(isset($object->photoUrl)) {
+                $dataUpdate['photoUrl'] = $object->photoUrl;
+            }
+
+            $this->firebaseAuth->updateUser($object->uid, $dataUpdate);
+        } catch(\Exception $e) {
+            Throw new Exception('pengguna/update-failed', $e->getMessage());
         }
     }
+
 }
