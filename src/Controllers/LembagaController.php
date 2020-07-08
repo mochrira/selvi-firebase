@@ -68,7 +68,8 @@ class LembagaController extends Resource {
             $this->Akses->insert([
                 'uid' => $this->penggunaAktif->uid,
                 'idLembaga' => $object->idLembaga,
-                'tipe' => 'OWNER'
+                'tipe' => 'OWNER',
+                'default' => true
             ]);
         } catch(Exception $e) {
             Throw new Exception('Gagal menambahkan akses pengguna', 'lembaga/insert-akses-failed', 500);
