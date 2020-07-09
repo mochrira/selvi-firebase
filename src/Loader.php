@@ -193,8 +193,9 @@ class Loader {
         $db = Database::get($schema);
         if(!$db) { Throw new Exception('Instance database tidak dikenali', 'db/unknown-schema', 404); }
 
-        $cek = $db->where([['filename', basename($file)]])->limit(1)->order(['start' => 'desc'])->get('_migration');
-        if($cek->num_rows() == 0 || ($cek->num_rows() > 0 && ($info->output !== "success" || $info->direction !== 'up'))) {
+        $records = $db->where([['filename', basename($file)]])->limit(1)->order(['start' => 'desc'])->get('_migration');
+        $latest = $cek->row();
+        if($records->num_rows() == 0 || ($records->num_rows() > 0 && ($latest->output !== "success" || $latest->direction !== 'up'))) {
             Throw new Exception('Database butuh diupdate. Hubungi pemilik/pengelola lembaga untuk melakukan update', 'db/need-upgrade', 400);
         }
     }
