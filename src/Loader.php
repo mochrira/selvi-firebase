@@ -4,6 +4,7 @@ namespace Selvi\Firebase;
 
 use Selvi\Factory as SelviFactory;
 use Selvi\Database\Manager as Database;
+use Selvi\Database\Migration;
 use Selvi\Exception;
 
 use Kreait\Firebase\Factory;
@@ -97,6 +98,7 @@ class Loader {
         $this->validateAkses();
         $this->validateLembaga();
         $this->setupDatabase();
+        $this->checkUpdate();
     }
 
     function validatePublicRequest() {
@@ -185,6 +187,23 @@ class Loader {
         $db = Database::add(array_merge(self::$dbConfig, ['database' => $this->lembagaAktif->basisData]), 'client');
         foreach(self::$clientMigrations as $path) {
             $db->addMigration($path);
+        }
+    }
+
+    function checkUpdate() {
+        $migration = SelviFactory::load(Migration::class, [], 'migration');
+        if($migration->needUpgrade('client') == true && $this->aksesAktif->tipe == 'OWNER') {
+            Throw new Exception('Database butuh diupdate', 'db/need-upgrade', 400);
+        }
+    }
+
+    function checkDependency($schema, $file) {
+        $db = Database::get($schema);
+        if(!$db) { Throw new Exception('Instance database tidak dikenali', 'db/unknown-schema', 404); }
+
+        $cek = $db->where([['filename', basename($file)]])->limit(1)->order(['start' => 'desc'])->get('_migration');
+        if($cek->num_rows() == 0 || ($cek->num_rows() > 0 && ($info->output !== "success" || $info->direction !== 'up'))) {
+            Throw new Exception('Database butuh diupdate. Hubungi admnistrator untuk melakukan update', 'db/need-upgrade', 400);
         }
     }
 
