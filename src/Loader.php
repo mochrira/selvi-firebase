@@ -98,7 +98,6 @@ class Loader {
         $this->validateAkses();
         $this->validateLembaga();
         $this->setupDatabase();
-        $this->checkUpdate();
     }
 
     function validatePublicRequest() {
@@ -190,20 +189,13 @@ class Loader {
         }
     }
 
-    function checkUpdate() {
-        $migration = SelviFactory::load(Migration::class, [], 'migration');
-        if($migration->needUpgrade('client') == true && $this->aksesAktif->tipe == 'OWNER') {
-            Throw new Exception('Database butuh diupdate', 'db/need-upgrade', 400);
-        }
-    }
-
     function checkDependency($schema, $file) {
         $db = Database::get($schema);
         if(!$db) { Throw new Exception('Instance database tidak dikenali', 'db/unknown-schema', 404); }
 
         $cek = $db->where([['filename', basename($file)]])->limit(1)->order(['start' => 'desc'])->get('_migration');
         if($cek->num_rows() == 0 || ($cek->num_rows() > 0 && ($info->output !== "success" || $info->direction !== 'up'))) {
-            Throw new Exception('Database butuh diupdate. Hubungi admnistrator untuk melakukan update', 'db/need-upgrade', 400);
+            Throw new Exception('Database butuh diupdate. Hubungi pemilik/pengelola lembaga untuk melakukan update', 'db/need-upgrade', 400);
         }
     }
 
