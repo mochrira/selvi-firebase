@@ -7,15 +7,9 @@
             "email": "mochrira@gmail.com"
         }
     ],
-    "repositories": {
-        "selvi/framework": {
-            "type": "vcs",
-            "url": "https://repository.wajek.id/selvi/framework.git"
-        }
-    },
     "require": {
         "kreait/firebase-php": "^5.3",
-        "selvi/framework": "^0.3.0"
+        "mochrira/selvi-framework": "^0.3.35"
     },
     "autoload": {
         "psr-4": {
