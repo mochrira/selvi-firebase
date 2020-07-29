@@ -136,11 +136,14 @@ class Loader {
         if(!$this->penggunaAktif) {
             if(!$pengguna->insert([
                 'uid' => $uid,
-                'email' => $this->firebaseToken->getClaim('email')
+                'email' => $this->firebaseToken->getClaim('email'),
+                'lastRequest' => time()
             ])) {
                 Throw new Exception('Gagal menambahkan pengguna', 'firebase-auth/insert-failed', 500);
             }
             $this->penggunaAktif = $pengguna->row([['uid', $uid]]);
+        } else {
+            $pengguna->update([['uid', $uid]], ['lastRequest' => time()]);
         }
     }
 
