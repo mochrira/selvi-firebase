@@ -24,4 +24,14 @@ class MessagingController extends Controller {
         return response('', 204);
     }
 
+    function revokeToken() {
+        $uid = $this->penggunaAktif->uid;
+        $data = json_decode($this->input->raw(), true);
+        $row = $this->FcmToken->row([['uid', $uid], ['platform', $data['platform']]]);
+        if($row !== null) {
+            $this->FcmToken->update([['id', $row->id]], ['uid' => null]);
+        }
+        return response('', 204);
+    }
+
 }

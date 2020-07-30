@@ -7,9 +7,19 @@
             "email": "mochrira@gmail.com"
         }
     ],
+    "minimum-stability": "dev",
+    "repositories": {
+        "mochrira/selvi-framework": {
+            "type": "path",
+            "url": "../framework",
+            "options": {
+                "symlink": true
+            }
+        }
+    },
     "require": {
         "kreait/firebase-php": "^5.3",
-        "mochrira/selvi-framework": "^0.3.41"
+        "mochrira/selvi-framework": "dev-master"
     },
     "autoload": {
         "psr-4": {
