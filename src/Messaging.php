@@ -11,7 +11,7 @@ class Messaging {
         Route::delete('/messaging', '\\Selvi\\Firebase\\Controllers\\MessagingController@revokeToken');
     }
 
-    public static function getRawMessage() {
+    public static function getRawMessage($message) {
         return new RawMessageFromArray($message);
     }
 
