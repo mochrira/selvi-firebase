@@ -10,13 +10,23 @@
     "minimum-stability": "dev",
     "repositories": {
         "mochrira/selvi-framework": {
-            "type": "vcs",
-            "url": "http://github.com/mochrira/selvi-framework.git"
+            "type": "path",
+            "url": "../../selvi/framework",
+            "options": {
+                "symlink": true
+            }
+        },
+        "selvi/firebase": {
+            "type": "path",
+            "url": "../../selvi/firebase",
+            "options": {
+                "symlink": true
+            }
         }
     },
     "require": {
         "kreait/firebase-php": "^5.3",
-        "mochrira/selvi-framework": "^0.3.41"
+        "mochrira/selvi-framework": "dev-master"
     },
     "autoload": {
         "psr-4": {
