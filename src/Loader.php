@@ -6,6 +6,7 @@ use Selvi\Factory as SelviFactory;
 use Selvi\Database\Manager as Database;
 use Selvi\Database\Migration;
 use Selvi\Exception;
+use Selvi\Route;
 
 use Kreait\Firebase\Factory;
 use Kreait\Firebase\ServiceAccount;
@@ -36,12 +37,11 @@ class Loader {
 
     public static function setup($config) {
         self::$dbConfig = $config['dbConfig'];
-        Database::add(self::$dbConfig, 'main')
-            ->addMigration(__DIR__.'/../migrations');
-
+        Database::add(self::$dbConfig, 'main')->addMigration(__DIR__.'/../migrations');
         self::$firebaseFactory = (new Factory())->withServiceAccount($config['serviceAccountFile']);
         self::$validateOrigin = $config['validateOrigin'];
         self::$dbPrefix = $config['dbPrefix'];
+        Route::get('/auth', '\\Selvi\\Firebase\\Controllers\\AuthController@get');
     }
 
     public static function getDatabase() {
