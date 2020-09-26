@@ -6,7 +6,7 @@ use Selvi\Route;
 class Akses {
 
     public static function setup() {
-        Route::apiResource('akses', '\\Selvi\\Firebase\\Controllers\\AksesController');
+        Route::apiResource('akses', '\\Selvi\\Firebase\\Controllers\\AksesController', ['get', 'post']);
     }
 
 }

@@ -94,7 +94,6 @@ class Loader {
         }
         $this->validateToken();
         $this->validatePengguna();
-        $this->validatePhoneNumber();
         $this->validateAkses();
         $this->validateLembaga();
         $this->setupDatabase();
@@ -161,7 +160,11 @@ class Loader {
         ]);
 
         if(!$this->aksesAktif) {
-            Throw new Exception('Anda belum memiliki akses ke lembaga manapun', 'firebase-auth/invalid-akses', 400);
+            Throw new Exception('Anda belum memiliki akses ke lembaga manapun', 'firebase-auth/invalid-akses', 403);
+        }
+
+        if($this->aksesAktif->tipe == null) {
+            Throw new Exception('Hubungi pemilik lembaga untuk mengkonfirmasi pendaftaran anda', 'firebase-auth/invalid-tipe-akses', 403);
         }
     }
 
