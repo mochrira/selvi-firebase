@@ -6,6 +6,7 @@ namespace Selvi\Firebase\Controllers;
 use Selvi\Firebase\Resource;
 use Selvi\Exception;
 use Selvi\Firebase\Models\Pengguna;
+use Selvi\Firebase\Models\Akses;
 
 class PenggunaController extends Resource { 
 
@@ -14,7 +15,8 @@ class PenggunaController extends Resource {
     
     function __construct() {
         parent::__construct();
-        $this->validateRequest();
+        $this->validateRequest();        
+        $this->load(Akses::class, 'Akses');
     }
 
     protected function afterUpdate($object = null) {
@@ -33,6 +35,19 @@ class PenggunaController extends Resource {
             }
 
             $this->firebaseAuth->updateUser($object->uid, $dataUpdate);
+        } catch(\Exception $e) {
+            Throw new Exception('pengguna/update-failed', $e->getMessage());
+        }
+    }
+
+    protected function beforeDelete($object = null) {
+        if(!isset($object)) {
+            Throw new Exception('pengguna/update-failed', 'Gagal mengambil object yang diupdate');
+        }
+
+        try {
+            $this->Akses->delete([['uid', $object->uid]]);
+            $this->firebaseAuth->deleteUser($object->uid);
         } catch(\Exception $e) {
             Throw new Exception('pengguna/update-failed', $e->getMessage());
         }

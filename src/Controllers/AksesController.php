@@ -22,10 +22,6 @@ class AksesController extends Resource {
         $this->load(Lembaga::class, 'Lembaga');
     }
 
-    function buildWhere() {
-        return [['uid', $this->penggunaAktif->uid]];
-    }
-
     function post() {
         $data = json_decode($this->input->raw(), true);
         if(!isset($data['joinCode'])) {
@@ -43,15 +39,6 @@ class AksesController extends Resource {
             'isDefault' => 1
         ]);
         return jsonResponse(['idAkses' => $idAkses]);
-    }
-
-    function get() {
-        $aktif = $this->input->get('aktif');
-        if($aktif !== null) {
-            $akses = $this->Akses->row([['isDefault', 1]]);
-            return jsonResponse($akses);
-        }
-        return parent::get();
     }
 
 }
