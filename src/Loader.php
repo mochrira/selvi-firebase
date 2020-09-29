@@ -130,11 +130,14 @@ class Loader {
 
     function validatePengguna() {
         $uid = $this->firebaseToken->getClaim('sub');
+        $firebaseUser = $this->firebaseAuth->getUser($uid);
+
         $pengguna = SelviFactory::load(Pengguna::class, [], 'pengguna');
         $this->penggunaAktif = $pengguna->row([['uid', $uid]]);
         if(!$this->penggunaAktif) {
             if(!$pengguna->insert([
                 'uid' => $uid,
+                'displayName' => $firebaseUser->displayName,
                 'email' => $this->firebaseToken->getClaim('email'),
                 'lastRequest' => time()
             ])) {
@@ -142,7 +145,13 @@ class Loader {
             }
             $this->penggunaAktif = $pengguna->row([['uid', $uid]]);
         } else {
-            $pengguna->update([['uid', $uid]], ['lastRequest' => time()]);
+            $pengguna->update(
+                [['uid', $uid]], 
+                [
+                    'displayName' => $firebaseUser->displayName, 
+                    'lastRequest' => time()
+                ]
+            );
         }
     }
 
