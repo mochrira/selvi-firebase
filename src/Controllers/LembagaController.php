@@ -17,7 +17,7 @@ class LembagaController extends Resource {
         parent::__construct(false);
         $this->validateToken();
         $this->validatePengguna();
-        $this->validatePhoneNumber();
+        // $this->validatePhoneNumber();
         if($this->input->method() !== 'POST') {
             $this->validateAkses();
             $this->validateLembaga();
