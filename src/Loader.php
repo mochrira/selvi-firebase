@@ -202,7 +202,7 @@ class Loader {
         foreach(self::$clientMigrations as $path) {
             $db->addMigration($path);
         }
-        
+
         $migration = new Migration();
         if($migration->needUpgrade('client') == true) {
             Throw new Exception('Database butuh diupdate. Hubungi pemilik/pengelola lembaga untuk melakukan update', 'db/need-upgrade', 400);
@@ -215,7 +215,7 @@ class Loader {
 
         $records = $db->where([['filename', basename($file)]])->limit(1)->order(['start' => 'desc'])->get('_migration');
         if($records->num_rows() == 0) {
-            Throw new Exception('Database butuh diupdate. Hubungi pemilik/pengelola lembaga untuk melakukan update', 'db/need-upgrade', 400);1
+            Throw new Exception('Database butuh diupdate. Hubungi pemilik/pengelola lembaga untuk melakukan update', 'db/need-upgrade', 400);
         }
 
         $latest = $records->row();
