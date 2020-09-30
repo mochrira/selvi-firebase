@@ -22,6 +22,27 @@ class AksesController extends Resource {
         $this->load(Lembaga::class, 'Lembaga');
     }
 
+    function validateData($data) {
+        $res = [];
+        if(isset($data['uid'])) {
+            $res['uid'] = $data['uid'];
+        }
+        if(isset($data['idLembaga'])) {
+            $res['idLembaga'] = $data['idLembaga'];
+        }
+        if(isset($data['tipe'])) {
+            $res['tipe'] = $data['tipe'];
+        }
+        if(isset($data['isDefault'])) {
+            $res['isDefault'] = $data['isDefault'];
+        }
+        return $res;
+    }
+
+    function afterUpdate($akses) {
+        $this->emitEvent('OnAfterUpdateAkses', [$akses]);
+    }
+
     function post() {
         $data = json_decode($this->input->raw(), true);
         if(!isset($data['joinCode'])) {

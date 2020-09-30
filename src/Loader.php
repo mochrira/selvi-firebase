@@ -23,6 +23,8 @@ class Loader {
     private static $clientMigrations = [];
     private static $validateOrigin = false;
     public static $dbPrefix = '';
+    private static $handler;
+    private static $handlerInstance;
 
     /**
      * Config Structure
@@ -36,6 +38,7 @@ class Loader {
      */
 
     public static function setup($config) {
+        self::$handler = $config['handler'];
         self::$dbConfig = $config['dbConfig'];
         Database::add(self::$dbConfig, 'main')->addMigration(__DIR__.'/../migrations');
         self::$firebaseFactory = (new Factory())->withServiceAccount($config['serviceAccountFile']);
@@ -225,6 +228,26 @@ class Loader {
         $latest = $records->row();
         if($records->num_rows() > 0 && ($latest->output !== "success" || $latest->direction !== 'up')) {
             Throw new Exception('Database butuh diupdate. Hubungi pemilik/pengelola lembaga untuk melakukan update', 'db/need-upgrade', 400);
+        }
+    }
+
+    public static function getHandler() {
+        if(self::$handlerInstance !== null) {
+            return self::$handlerInstance;
+        }
+        if(isset(self::$handler)) {
+            self::$handlerInstance = new self::$handler();
+            return self::$handlerInstance;
+        }
+        return null;
+    }
+
+    function emitEvent($name, $data) {
+        $handler = self::getHandler();
+        if($handler !== null) {
+            if(is_callable(array($handler, $name))) {
+                $handler->{$name}(...$data);
+            }
         }
     }
 
