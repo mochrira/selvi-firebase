@@ -97,6 +97,7 @@ class Loader {
         $this->validateAkses();
         $this->validateLembaga();
         $this->setupDatabase();
+        $this->checkDependency();
     }
 
     function validatePublicRequest() {
