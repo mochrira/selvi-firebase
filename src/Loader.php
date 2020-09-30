@@ -97,12 +97,14 @@ class Loader {
         $this->validateAkses();
         $this->validateLembaga();
         $this->setupDatabase();
+        $this->checkMigration();
     }
 
     function validatePublicRequest() {
         $this->validateOrigin();
         $this->validateLembaga();
         $this->setupDatabase();
+        $this->checkMigration();
     }
 
     function validateOrigin() {
@@ -202,7 +204,9 @@ class Loader {
         foreach(self::$clientMigrations as $path) {
             $db->addMigration($path);
         }
+    }
 
+    function checkMigration() {
         $migration = new Migration();
         if($migration->needUpgrade('client') == true) {
             Throw new Exception('Database butuh diupdate. Hubungi pemilik/pengelola lembaga untuk melakukan update', 'db/need-upgrade', 400);
