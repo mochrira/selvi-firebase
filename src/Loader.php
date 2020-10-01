@@ -135,11 +135,10 @@ class Loader {
 
     function validatePengguna() {
         $uid = $this->firebaseToken->getClaim('sub');
-        $firebaseUser = $this->firebaseAuth->getUser($uid);
-
         $pengguna = SelviFactory::load(Pengguna::class, [], 'pengguna');
         $this->penggunaAktif = $pengguna->row([['uid', $uid]]);
         if(!$this->penggunaAktif) {
+            $firebaseUser = $this->firebaseAuth->getUser($uid);
             if(!$pengguna->insert([
                 'uid' => $uid,
                 'displayName' => $firebaseUser->displayName,
@@ -149,14 +148,6 @@ class Loader {
                 Throw new Exception('Gagal menambahkan pengguna', 'firebase-auth/insert-failed', 500);
             }
             $this->penggunaAktif = $pengguna->row([['uid', $uid]]);
-        } else {
-            $pengguna->update(
-                [['uid', $uid]], 
-                [
-                    'displayName' => $firebaseUser->displayName, 
-                    'lastRequest' => time()
-                ]
-            );
         }
     }
 

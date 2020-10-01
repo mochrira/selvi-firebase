@@ -6,7 +6,9 @@ namespace Selvi\Firebase\Controllers;
 use Selvi\Firebase\Resource;
 use Selvi\Exception;
 use Selvi\Firebase\Models\Pengguna;
+use Selvi\Firebase\Loader as Firebase;
 use Selvi\Firebase\Models\Akses;
+use Selvi\Firebase\Models\Lembaga;
 
 class PenggunaController extends Resource { 
 
@@ -17,13 +19,10 @@ class PenggunaController extends Resource {
         parent::__construct();
         $this->validateRequest();        
         $this->load(Akses::class, 'Akses');
+        $this->load(Lembaga::class, 'Lembaga');
     }
 
-    protected function afterUpdate($object = null) {
-        if(!isset($object)) {
-            Throw new Exception('pengguna/update-failed', 'Gagal mengambil object yang diupdate');
-        }
-
+    protected function beforeUpdate($object) {
         try {
             $dataUpdate = [];
             if(isset($object->displayName)) {
@@ -40,12 +39,16 @@ class PenggunaController extends Resource {
         }
     }
 
-    protected function beforeDelete($object = null) {
-        if(!isset($object)) {
-            Throw new Exception('pengguna/update-failed', 'Gagal mengambil object yang diupdate');
-        }
-
+    protected function beforeDelete($object) {
         try {
+            $aksesOwner = $this->Akses->row([['uid', $object->uid], ['tipe', 'OWNER']]);
+            if($aksesOwner !== null) {
+                $lembaga = $this->Lembaga->row([['idLembaga', $aksesOwner->idLembaga]]);
+                $db = Firebase::getDatabase();
+                $db->dropSchema($lembaga->basisData);
+                $this->Akses->delete([['id', $aksesOwner->id]]);
+                $this->Lembaga->delete([['idLembaga', $lembaga->idLembaga]]);
+            }
             $this->Akses->delete([['uid', $object->uid]]);
             $this->firebaseAuth->deleteUser($object->uid);
         } catch(\Exception $e) {

@@ -60,6 +60,14 @@ class LembagaController extends Resource {
                 'tglRegistrasi' => date('Y-m-d H:i:s')
             ]);
         }
+        return $data;
+    }
+
+    protected function beforeDelete($object) {
+        $db = Firebase::getDatabase();
+        $db->dropSchema($object->basisData);
+        $this->load(Akses::class, 'Akses');
+        $this->Akses->delete([['idLembaga', $object->idLembaga]]);
     }
 
     protected function afterInsert($object) {
