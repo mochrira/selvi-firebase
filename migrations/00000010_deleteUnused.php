@@ -15,7 +15,7 @@ return function ($schema, $direction) {
             'name' => 'VARCHAR(150) NOT NULL PRIMARY KEY',
             'value' => 'TEXT'
         ]);
-        $db->create('origin', [
+        $schema->create('origin', [
             'id' => 'INT(11) AUTO_INCREMENT PRIMARY KEY',
             'origin' => 'VARCHAR(150) NOT NULL',
             'idLembaga' => 'INT(11)'
