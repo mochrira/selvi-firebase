@@ -194,16 +194,20 @@ class Loader {
     }
 
     function setupDatabase() {
-        $db = Database::add(array_merge(self::$dbConfig, ['database' => $this->lembagaAktif->basisData]), 'client');
-        foreach(self::$clientMigrations as $path) {
-            $db->addMigration($path);
+        if($this->lembagaAktif->basisData !== null) {
+            $db = Database::add(array_merge(self::$dbConfig, ['database' => $this->lembagaAktif->basisData]), 'client');
+            foreach(self::$clientMigrations as $path) {
+                $db->addMigration($path);
+            }
         }
     }
 
     function checkMigration() {
-        $migration = new Migration();
-        if($migration->needUpgrade('client') == true) {
-            Throw new Exception('Database butuh diupdate. Hubungi pemilik/pengelola lembaga untuk melakukan update', 'db/need-upgrade', 400);
+        if($this->lembagaAktif->basisData !== null) {
+            $migration = new Migration();
+            if($migration->needUpgrade('client') == true) {
+                Throw new Exception('Database butuh diupdate. Hubungi pemilik/pengelola lembaga untuk melakukan update', 'db/need-upgrade', 400);
+            }
         }
     }
 
