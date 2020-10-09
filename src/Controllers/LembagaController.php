@@ -26,8 +26,7 @@ class LembagaController extends Resource {
         $this->loadModel();
     }
 
-    protected function validateData() {
-        $data = json_decode($this->input->raw(), true);
+    protected function validateData($data, $lembaga = null) {
         if(!isset($data['nmLembaga'])) {
             Throw new Exception('Periksa kembali isian anda', 'lembaga/invalid-request', 400);
         }
@@ -70,7 +69,7 @@ class LembagaController extends Resource {
         $this->Akses->delete([['idLembaga', $object->idLembaga]]);
     }
 
-    protected function afterInsert($object) {
+    protected function afterInsert($object, &$response = null) {
         try {
             $this->load(Akses::class, 'Akses');
             $this->Akses->insert([

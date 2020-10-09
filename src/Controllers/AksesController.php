@@ -22,7 +22,7 @@ class AksesController extends Resource {
         $this->load(Lembaga::class, 'Lembaga');
     }
 
-    function validateData($data) {
+    function validateData($data, $akses = null) {
         $res = [];
         if(isset($data['uid'])) {
             $res['uid'] = $data['uid'];
@@ -39,7 +39,7 @@ class AksesController extends Resource {
         return $res;
     }
 
-    function afterUpdate($akses) {
+    function afterUpdate($akses, &$response = null) {
         $this->emitEvent('OnAfterUpdateAkses', [$akses]);
     }
 

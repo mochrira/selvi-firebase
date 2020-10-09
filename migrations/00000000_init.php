@@ -7,7 +7,7 @@ return function ($db, $direction) {
             'nmLembaga' => 'varchar(150) NOT NULL',
             'alamat' => 'text NOT NULL',
             'kota' => 'varchar(150) NOT NULL',
-            'basisData' => 'varchar(150) NOT NULL',
+            'basisData' => 'varchar(150)',
             'photoUrl' => 'text',
             'tglRegistrasi' => 'datetime NOT NULL DEFAULT CURRENT_TIMESTAMP'
         ], [
