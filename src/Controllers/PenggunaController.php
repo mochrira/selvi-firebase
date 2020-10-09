@@ -16,43 +16,54 @@ class PenggunaController extends Resource {
     protected $modelAlias = 'Pengguna';
     
     function __construct() {
-        parent::__construct();
-        $this->validateRequest();        
-        $this->load(Akses::class, 'Akses');
-        $this->load(Lembaga::class, 'Lembaga');
+        parent::__construct(false);
+        $this->validateRequest();
+        $this->loadModel();
     }
 
-    protected function beforeUpdate($object) {
-        try {
-            $dataUpdate = [];
-            if(isset($object->displayName)) {
-                $dataUpdate['displayName'] = $object->displayName;
-            }
+    function validateData($data, $object = null) { 
+        if($this->input->method() == 'PATCH') {
+            try {
+                $dataUpdate = [];
+                if(isset($data['displayName'])) {
+                    $dataUpdate['displayName'] = $data['displayName'];
+                }
+    
+                if(isset($data['photoUrl'])) {
+                    $dataUpdate['photoUrl'] = $data['photoUrl'];
+                }
+    
+                $this->firebaseAuth->updateUser($object->uid, $dataUpdate);
 
-            if(isset($object->photoUrl)) {
-                $dataUpdate['photoUrl'] = $object->photoUrl;
-            }
+                if(isset($data['email'])) {
+                    $this->firebaseAuth->changeUserEmail($object->uid, $data['email']); 
+                }
 
-            $this->firebaseAuth->updateUser($object->uid, $dataUpdate);
-        } catch(\Exception $e) {
-            Throw new Exception('pengguna/update-failed', $e->getMessage());
-        }
-    }
+                if(isset($data['password'])) {
+                    $this->firebaseAuth->changeUserPassword($object->uid, $data['password']);
+                }
 
-    protected function beforeDelete($object) {
-        try {
-            $aksesOwner = $this->Akses->row([['uid', $object->uid], ['tipe', 'OWNER']]);
-            if($aksesOwner !== null) {
-                $lembaga = $this->Lembaga->row([['idLembaga', $aksesOwner->idLembaga]]);
-                $db = Firebase::getDatabase();
-                $db->dropSchema($lembaga->basisData);
-                $this->Akses->delete([['id', $aksesOwner->id]]);
-                $this->Lembaga->delete([['idLembaga', $lembaga->idLembaga]]);
+                return $dataUpdate;
+            } catch(\Exception $e) {
+                Throw new Exception('pengguna/update-failed', $e->getMessage(), 500);
             }
-            $this->Akses->delete([['uid', $object->uid]]);
-            $this->firebaseAuth->deleteUser($object->uid);
-        } catch(\Exception $e) {
-            Throw new Exception('pengguna/update-failed', $e->getMessage());
+        } else if($this->input->method == 'DELETE') {
+            try {
+                $this->load(Akses::class, 'Akses');
+                $aksesOwner = $this->Akses->row([['uid', $object->uid], ['tipe', 'OWNER']]);
+                if($aksesOwner !== null) {
+                    $this->load(Lembaga::class, 'Lembaga');
+                    $lembaga = $this->Lembaga->row([['idLembaga', $aksesOwner->idLembaga]]);
+                    $db = Firebase::getDatabase();
+                    $db->dropSchema($lembaga->basisData);
+                    $this->Akses->delete([['id', $aksesOwner->id]]);
+                    $this->Lembaga->delete([['idLembaga', $lembaga->idLembaga]]);
+                }
+                $this->Akses->delete([['uid', $object->uid]]);
+                $this->firebaseAuth->deleteUser($object->uid);
+            } catch(\Exception $e) {
+                Throw new Exception('pengguna/update-failed', $e->getMessage());
+            }
         }
     }
 
