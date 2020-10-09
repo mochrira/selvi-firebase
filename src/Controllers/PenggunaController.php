@@ -37,6 +37,7 @@ class PenggunaController extends Resource {
 
                 if(isset($data['email'])) {
                     $this->firebaseAuth->changeUserEmail($object->uid, $data['email']); 
+                    $dataUpdate['email'] = $data['email'];
                 }
 
                 if(isset($data['password'])) {
