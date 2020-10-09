@@ -24,7 +24,11 @@ class PenggunaController extends Resource {
     function validateData($data, $object = null) { 
         if($this->input->method() == 'PATCH') {
             try {
-                $dataUpdate = [];
+                $dataUpdate = [
+                    'displayName' => $object->displayName,
+                    'photoUrl' => $object->photoUrl
+                ];
+                
                 if(isset($data['displayName'])) {
                     $dataUpdate['displayName'] = $data['displayName'];
                 }
