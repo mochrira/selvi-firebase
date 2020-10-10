@@ -87,6 +87,10 @@ class LembagaController extends Resource {
         return $data;
     }
 
+    function afterUpdate($lembaga, &$response = null) {
+        $response['joinCode'] = $lembaga->joinCode;
+    }
+
     function afterInsert($lembaga, &$response = null) {
         try {
             $this->load(Akses::class, 'Akses');
