@@ -88,7 +88,12 @@ class LembagaController extends Resource {
     }
 
     function afterUpdate($lembaga, &$response = null) {
-        $response['joinCode'] = $lembaga->joinCode;
+        if($this->input->method() == 'PATCH' && $this->input->get('action') == 'resetJoinCode') {
+            $response->setCode(200);
+            $response->setContent(json_encode([
+                'joinCode' => $lembaga->joinCode
+            ]));
+        }
     }
 
     function afterInsert($lembaga, &$response = null) {
