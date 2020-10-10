@@ -17,7 +17,6 @@ class LembagaController extends Resource {
         parent::__construct(false);
         $this->validateToken();
         $this->validatePengguna();
-        // $this->validatePhoneNumber();
         if($this->input->method() !== 'POST') {
             $this->validateAkses();
             $this->validateLembaga();
@@ -26,18 +25,18 @@ class LembagaController extends Resource {
         $this->loadModel();
     }
 
-    protected function validateData($data, $lembaga = null) {
-        if(!isset($data['nmLembaga'])) {
-            Throw new Exception('Periksa kembali isian anda', 'lembaga/invalid-request', 400);
-        }
-        if(!isset($data['alamat'])) {
-            Throw new Exception('Periksa kembali isian anda', 'lembaga/invalid-request', 400);
-        }
-        if(!isset($data['kota'])) {
-            Throw new Exception('Periksa kembali isian anda', 'lembaga/invalid-request', 400);
-        }
-
+    function validateData($data, $lembaga = null) {
         if($this->input->method() == 'POST') {
+            if(!isset($data['nmLembaga'])) {
+                Throw new Exception('Periksa kembali isian anda', 'lembaga/invalid-request', 400);
+            }
+            if(!isset($data['alamat'])) {
+                Throw new Exception('Periksa kembali isian anda', 'lembaga/invalid-request', 400);
+            }
+            if(!isset($data['kota'])) {
+                Throw new Exception('Periksa kembali isian anda', 'lembaga/invalid-request', 400);
+            }
+
             $this->load(Akses::class, 'Akses');
             $cek = $this->Akses->row([['uid', $this->penggunaAktif->uid]]);
             if($cek !== null) {
@@ -59,22 +58,22 @@ class LembagaController extends Resource {
                 'tglRegistrasi' => date('Y-m-d H:i:s')
             ]);
         }
+
+        if($this->input->method() == 'DELETE') {
+            $db = Firebase::getDatabase();
+            $db->dropSchema($object->basisData);
+            $this->load(Akses::class, 'Akses');
+            $this->Akses->delete([['idLembaga', $object->idLembaga]]);
+        }
         return $data;
     }
 
-    protected function beforeDelete($object) {
-        $db = Firebase::getDatabase();
-        $db->dropSchema($object->basisData);
-        $this->load(Akses::class, 'Akses');
-        $this->Akses->delete([['idLembaga', $object->idLembaga]]);
-    }
-
-    protected function afterInsert($object, &$response = null) {
+    function afterInsert($lembaga, &$response = null) {
         try {
             $this->load(Akses::class, 'Akses');
             $this->Akses->insert([
                 'uid' => $this->penggunaAktif->uid,
-                'idLembaga' => $object->idLembaga,
+                'idLembaga' => $lembaga->idLembaga,
                 'tipe' => 'OWNER',
                 'isDefault' => true
             ]);
