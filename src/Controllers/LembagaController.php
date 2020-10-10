@@ -127,7 +127,7 @@ class LembagaController extends Resource {
         while($found) {
             $code = '';
             for($i = 0; $i <= 4; $i++) {
-                $code .= rand(0, strlen($allowedChars) - 1);
+                $code .= substr($allowedChars, rand(0, strlen($allowedChars) - 1), 1);
             }
             $cek = $this->Lembaga->row([['joinCode', $code]]);
             if($cek == null) {
