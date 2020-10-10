@@ -59,6 +59,25 @@ class LembagaController extends Resource {
             ]);
         }
 
+        if($this->input->method() == 'PATCH') {
+            $action = $this->input->get('action');
+            if($action !== null && $action == 'resetJoinCode') {
+                $data['joinCode'] = $this->generateJoinCode();
+            } else {
+                if(!isset($data['nmLembaga'])) {
+                    Throw new Exception('Periksa kembali isian anda', 'lembaga/invalid-request', 400);
+                }
+                if(!isset($data['alamat'])) {
+                    Throw new Exception('Periksa kembali isian anda', 'lembaga/invalid-request', 400);
+                }
+                if(!isset($data['kota'])) {
+                    Throw new Exception('Periksa kembali isian anda', 'lembaga/invalid-request', 400);
+                }
+            }
+
+            return $data;
+        }
+
         if($this->input->method() == 'DELETE') {
             $db = Firebase::getDatabase();
             $db->dropSchema($object->basisData);
@@ -91,6 +110,24 @@ class LembagaController extends Resource {
         } catch(Exception $e) {
             Throw new Exception('Gagal menambahkan akses pengguna', 'lembaga/insert-akses-failed', 500);
         }
+    }
+
+    private function generateJoinCode() {
+        $allowedChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+        $found = true;
+        while($found) {
+            $code = '';
+            for($i = 0; $i <= 4; $i++) {
+                $code .= rand(0, strlen($allowedChars) - 1);
+            }
+            $cek = $this->Lembaga->row([['joinCode', $code]]);
+            if($cek == null) {
+                $found = false;
+            } else {
+                $found = true;
+            }
+        }
+        return $code;
     }
 
     private function generateDbName($nmLembaga) {
