@@ -22,6 +22,17 @@ class AksesController extends Resource {
         $this->load(Lembaga::class, 'Lembaga');
     }
 
+    function get() {
+        $idAkses = $this->uri->segment(2);
+        if($idAkses == null) {
+            $offset = $this->input->get("offset") ?: 0;
+            $limit = $this->input->get("limit") ?: 30;
+            $search = $this->input->get("search") ?: "";
+            return jsonResponse($this->Akses->getByLembaga($this->aksesAktif->idLembaga, $this->buildWhere(), $search, $offset, $limit));
+        }
+        return parent::get();
+    }
+
     function validateData($data, $akses = null) {
         $res = [];
         if(isset($data['uid'])) {

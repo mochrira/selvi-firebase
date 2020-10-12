@@ -18,4 +18,16 @@ class Akses extends Model {
         ]
     ];
 
+    function getByLembaga($idLembaga, $where = [], $q = "", $offset = 0, $limit = 30) {
+        $query = $this->db->select($this->selectable)
+            ->innerJoin('pengguna', 'pengguna.uid = akses.uid')
+            ->innerJoin('lembaga', 'lembaga.idLembaga = akses.idLembaga')
+            ->where([['akses.idLembaga', $idLembaga]])
+            ->where($where)->orWhere($this->buildSearchable($q));
+        if($limit > -1) {
+            $query->limit($limit)->offset($offset);
+        }
+        return $query->get('akses')->result();
+    }
+
 }
