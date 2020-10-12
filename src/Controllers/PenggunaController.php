@@ -21,6 +21,17 @@ class PenggunaController extends Resource {
         $this->loadModel();
     }
 
+    function get() {
+        $uid = $this->uri->segment(2);
+        if($uid == null) {
+            $offset = $this->input->get("offset") ?: 0;
+            $limit = $this->input->get("limit") ?: 30;
+            $search = $this->input->get("search") ?: "";
+            return jsonResponse($this->Pengguna->getByLembaga($this->lembagaAktif->idLembaga, $this->buildWhere(), $offset, $limit, $search));
+        }
+        return parent::get();
+    }
+
     function validateData($data, $object = null) { 
         if($this->input->method() == 'PATCH') {
             try {
