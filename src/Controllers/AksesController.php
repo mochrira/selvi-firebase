@@ -51,7 +51,7 @@ class AksesController extends Resource {
     }
 
     function afterUpdate($akses, &$response = null) {
-        $this->emitEvent('OnAfterUpdateAkses', [$akses, $response]);
+        $this->emitEvent('OnAfterUpdateAkses', [$akses, &$response]);
     }
 
     function post() {

@@ -82,7 +82,7 @@ class LembagaController extends Resource {
             $this->Akses->delete([['idLembaga', $object->idLembaga]]);
         }
 
-        $this->emitEvent('OnLembagaValidateData', [$data]);
+        $this->emitEvent('OnLembagaValidateData', [&$data]);
         return $data;
     }
 
