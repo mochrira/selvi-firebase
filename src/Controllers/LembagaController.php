@@ -53,10 +53,9 @@ class LembagaController extends Resource {
                 Throw new Exception('Gagal membuat database', 'lembaga/create-db-failed', 500);
             }
 
-            return array_merge($data, [
-                'basisData' => $dbName,
-                'tglRegistrasi' => date('Y-m-d H:i:s')
-            ]);
+            $data['basisData'] = $dbName;
+            $data['tglRegistrasi'] = date('Y-m-d H:i:s');
+            $data['joinCode'] = $this->generateJoinCode();
         }
 
         if($this->input->method() == 'PATCH') {
@@ -74,8 +73,6 @@ class LembagaController extends Resource {
                     Throw new Exception('Periksa kembali isian anda', 'lembaga/invalid-request', 400);
                 }
             }
-
-            return $data;
         }
 
         if($this->input->method() == 'DELETE') {
