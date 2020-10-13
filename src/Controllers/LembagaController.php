@@ -119,6 +119,8 @@ class LembagaController extends Resource {
         } catch(Exception $e) {
             Throw new Exception('Gagal menambahkan akses pengguna', 'lembaga/insert-akses-failed', 500);
         }
+
+        $this->emitEvent('OnLembagaAfterInsert', [$lembaga, $response]);
     }
 
     private function generateJoinCode() {
