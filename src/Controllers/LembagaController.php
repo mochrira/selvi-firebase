@@ -25,6 +25,12 @@ class LembagaController extends Resource {
         $this->loadModel();
     }
 
+    function buildWhere() {
+        $where = [];
+        $this->emitEvent('lembaga', 'buildWhere', [&$where]);
+        return $where;
+    }
+
     function validateData($data, $lembaga = null) {
         if($this->input->method() == 'POST') {
             if(!isset($data['nmLembaga'])) {
@@ -82,17 +88,8 @@ class LembagaController extends Resource {
             $this->Akses->delete([['idLembaga', $object->idLembaga]]);
         }
 
-        $this->emitEvent('OnLembagaValidateData', [&$data]);
+        $this->emitEvent('lembaga', 'validateData', [&$data]);
         return $data;
-    }
-
-    function afterUpdate($lembaga, &$response = null) {
-        if($this->input->method() == 'PATCH' && $this->input->get('action') == 'resetJoinCode') {
-            $response->setCode(200);
-            $response->setContent(json_encode([
-                'joinCode' => $lembaga->joinCode
-            ]));
-        }
     }
 
     function afterInsert($lembaga, &$response = null) {
@@ -119,7 +116,21 @@ class LembagaController extends Resource {
             Throw new Exception('Gagal menambahkan akses pengguna', 'lembaga/insert-akses-failed', 500);
         }
 
-        $this->emitEvent('OnLembagaAfterInsert', [$lembaga, $response]);
+        $this->emitEvent('lembaga', 'afterInsert', [$lembaga, &$response]);
+    }
+
+    function afterUpdate($lembaga, &$response = null) {
+        if($this->input->get('action') == 'resetJoinCode') {
+            $response->setCode(200);
+            $response->setContent(json_encode([
+                'joinCode' => $lembaga->joinCode
+            ]));
+        }
+        $this->emitEvent('lembaga', 'afterUpdate', [$lembaga, &$response]);
+    }
+
+    function afterDelete($lembaga, &$response = null) {
+        $this->emitEvent('lembaga', 'afterDelete', [$lembaga, &$response]);
     }
 
     private function generateJoinCode() {

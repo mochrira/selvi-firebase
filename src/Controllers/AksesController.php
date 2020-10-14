@@ -22,6 +22,12 @@ class AksesController extends Resource {
         $this->load(Lembaga::class, 'Lembaga');
     }
 
+    function buildWhere() {
+        $where = [];
+        $this->emitEvent('akses', 'buildWhere', [&$where]);
+        return $where;
+    }
+
     function get() {
         $idAkses = $this->uri->segment(2);
         if($idAkses == null) {
@@ -34,31 +40,37 @@ class AksesController extends Resource {
     }
 
     function validateData($data, $akses = null) {
-        $res = [];
-        if(isset($data['uid'])) {
-            $res['uid'] = $data['uid'];
-        }
-        if(isset($data['idLembaga'])) {
-            $res['idLembaga'] = $data['idLembaga'];
-        }
-        if(isset($data['tipe'])) {
-            $res['tipe'] = $data['tipe'];
-        }
-        if(isset($data['isDefault'])) {
-            $res['isDefault'] = $data['isDefault'];
-        }
-        return $res;
-    }
+        $validatedData = [];
+        if($this->input->method() == 'POST') {
+            if(!isset($data['joinCode'])) {
+                throw new Exception('Masukkan kode join terlebih dahulu', 'join/invalid-request', 400);
+            }
 
-    function afterUpdate($akses, &$response = null) {
-        $this->emitEvent('OnAfterUpdateAkses', [$akses, &$response]);
+            $validatedData['joinCode'] = $data['joinCode'];
+        }
+
+        if($this->input->method() == 'PATCH') {
+            if(isset($data['uid'])) {
+                $validatedData['uid'] = $data['uid'];
+            }
+            if(isset($data['idLembaga'])) {
+                $validatedData['idLembaga'] = $data['idLembaga'];
+            }
+            if(isset($data['tipe'])) {
+                $validatedData['tipe'] = $data['tipe'];
+            }
+            if(isset($data['isDefault'])) {
+                $validatedData['isDefault'] = $data['isDefault'];
+            }
+        }
+
+        $this->emitEvent('akses', 'validateData', [&$data, $akses]);
+        return $validatedData;
     }
 
     function post() {
         $data = json_decode($this->input->raw(), true);
-        if(!isset($data['joinCode'])) {
-            throw new Exception('Masukkan kode join terlebih dahulu', 'join/invalid-request', 400);
-        }
+        $this->validateData($data);
         
         $lembaga = $this->Lembaga->row([['joinCode', $data['joinCode']]]);
         if($lembaga == null) {
@@ -71,6 +83,18 @@ class AksesController extends Resource {
             'isDefault' => 1
         ]);
         return jsonResponse(['idAkses' => $idAkses]);
+    }
+
+    function afterInsert($akses, &$response = null) {
+        $this->emitEvent('akses', 'afterInsert', [$akses, &$response]);
+    }
+
+    function afterUpdate($akses, &$response = null) {
+        $this->emitEvent('akses', 'afterUpdate', [$akses, &$response]);
+    }
+
+    function afterDelete($akses, &$response = null) {
+        $this->emitEvent('akses', 'afterDelete', [$akses, &$response]);
     }
 
 }

@@ -23,8 +23,6 @@ class Loader {
     private static $clientMigrations = [];
     private static $validateOrigin = false;
     public static $dbPrefix = '';
-    private static $handler;
-    private static $handlerInstance;
 
     /**
      * Config Structure
@@ -38,13 +36,13 @@ class Loader {
      */
 
     public static function setup($config) {
-        self::$handler = $config['handler'];
         self::$dbConfig = $config['dbConfig'];
         Database::add(self::$dbConfig, 'main')->addMigration(__DIR__.'/../migrations');
         self::$firebaseFactory = (new Factory())->withServiceAccount($config['serviceAccountFile']);
         self::$validateOrigin = $config['validateOrigin'];
         self::$dbPrefix = $config['dbPrefix'];
         Route::get('/auth', '\\Selvi\\Firebase\\Controllers\\AuthController@get');
+        self::$handler = $config['handler'];
     }
 
     public static function getDatabase() {
@@ -226,22 +224,25 @@ class Loader {
         }
     }
 
-    public static function getHandler() {
-        if(self::$handlerInstance !== null) {
-            return self::$handlerInstance;
+    private static $handler;
+    private static $handlerInstance = [];
+
+    public static function getHandler($name) {
+        if(isset(self::$handlerInstance[$name])) {
+            return self::$handlerInstance[$name];
         }
         if(isset(self::$handler)) {
-            self::$handlerInstance = new self::$handler();
-            return self::$handlerInstance;
+            self::$handlerInstance[$name] = new self::$handler[$name]();
+            return self::$handlerInstance[$name];
         }
         return null;
     }
 
-    function emitEvent($name, $data) {
-        $handler = self::getHandler();
+    function emitEvent($name, $function, $params) {
+        $handler = self::getHandler($name);
         if($handler !== null) {
-            if(is_callable(array($handler, $name))) {
-                $handler->{$name}(...$data);
+            if(is_callable(array($handler, $function))) {
+                $handler->{$function}(...$params);
             }
         }
     }

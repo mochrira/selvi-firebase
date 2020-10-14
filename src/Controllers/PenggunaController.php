@@ -21,6 +21,12 @@ class PenggunaController extends Resource {
         $this->loadModel();
     }
 
+    function buildWhere() {
+        $where = [];
+        $this->emitEvent('buildWhere', [&$where]);
+        return $where;
+    }
+
     function get() {
         $uid = $this->uri->segment(2);
         if($uid == null) {
@@ -33,37 +39,39 @@ class PenggunaController extends Resource {
     }
 
     function validateData($data, $object = null) { 
+        $validatedData = [];
         if($this->input->method() == 'PATCH') {
             try {
-                $dataUpdate = [
+                $validatedData = [
                     'displayName' => $object->displayName,
                     'photoUrl' => $object->photoUrl
                 ];
                 
                 if(isset($data['displayName'])) {
-                    $dataUpdate['displayName'] = $data['displayName'];
+                    $validatedData['displayName'] = $data['displayName'];
                 }
     
                 if(isset($data['photoUrl'])) {
-                    $dataUpdate['photoUrl'] = $data['photoUrl'];
+                    $validatedData['photoUrl'] = $data['photoUrl'];
                 }
     
-                $this->firebaseAuth->updateUser($object->uid, $dataUpdate);
+                $this->firebaseAuth->updateUser($object->uid, $validatedData);
 
                 if(isset($data['email'])) {
                     $this->firebaseAuth->changeUserEmail($object->uid, $data['email']); 
-                    $dataUpdate['email'] = $data['email'];
+                    $validatedData['email'] = $data['email'];
                 }
 
                 if(isset($data['password'])) {
                     $this->firebaseAuth->changeUserPassword($object->uid, $data['password']);
                 }
 
-                return $dataUpdate;
             } catch(\Exception $e) {
                 Throw new Exception('pengguna/update-failed', $e->getMessage(), 500);
             }
-        } else if($this->input->method == 'DELETE') {
+        } 
+        
+        if($this->input->method == 'DELETE') {
             try {
                 $this->load(Akses::class, 'Akses');
                 $aksesOwner = $this->Akses->row([['uid', $object->uid], ['tipe', 'OWNER']]);
@@ -81,6 +89,21 @@ class PenggunaController extends Resource {
                 Throw new Exception('pengguna/update-failed', $e->getMessage());
             }
         }
+
+        $this->emitEvent('pengguna', 'validateData', [&$validatedData]);
+        return $validatedData;
+    }
+
+    function afterInsert($pengguna, &$response = null) {
+        $this->emitEvent('pengguna', 'afterInsert', [$pengguna, &$response]);
+    }
+
+    function afterUpdate($pengguna, &$response = null) {
+        $this->emitEvent('pengguna', 'afterUpdate', [$pengguna, &$response]);
+    }
+
+    function afterDelete($pengguna, &$response = null) {
+        $this->emitEvent('pengguna', 'afterDelete', [$pengguna, &$response]);
     }
 
 }
