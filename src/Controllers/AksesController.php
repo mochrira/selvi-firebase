@@ -45,7 +45,6 @@ class AksesController extends Resource {
             if(!isset($data['joinCode'])) {
                 throw new Exception('Masukkan kode join terlebih dahulu', 'join/invalid-request', 400);
             }
-
             $validatedData['joinCode'] = $data['joinCode'];
         }
 
@@ -56,14 +55,13 @@ class AksesController extends Resource {
             if(isset($data['idLembaga'])) {
                 $validatedData['idLembaga'] = $data['idLembaga'];
             }
-            if(isset($data['tipe'])) {
-                $validatedData['tipe'] = $data['tipe'];
-            }
             if(isset($data['isDefault'])) {
                 $validatedData['isDefault'] = $data['isDefault'];
             }
+            $validatedData['tipe'] = $data['tipe'];
         }
 
+        var_dump($validatedData);
         $this->emitEvent('akses', 'validateData', [&$data, $akses]);
         return $validatedData;
     }
