@@ -66,12 +66,14 @@ class PenggunaController extends Resource {
                     $this->firebaseAuth->changeUserPassword($object->uid, $data['password']);
                 }
 
+            } catch(Exception $e) {
+                Throw $e;
             } catch(\Exception $e) {
                 Throw new Exception('pengguna/update-failed', $e->getMessage(), 500);
             }
         } 
         
-        if($this->input->method == 'DELETE') {
+        if($this->input->method() == 'DELETE') {
             try {
                 $this->load(Akses::class, 'Akses');
                 $aksesOwner = $this->Akses->row([['uid', $object->uid], ['tipe', 'OWNER']]);
@@ -85,6 +87,8 @@ class PenggunaController extends Resource {
                 }
                 $this->Akses->delete([['uid', $object->uid]]);
                 $this->firebaseAuth->deleteUser($object->uid);
+            } catch(Exception $e) {
+                Throw $e;
             } catch(\Exception $e) {
                 Throw new Exception('pengguna/update-failed', $e->getMessage());
             }
