@@ -8,7 +8,6 @@
             "email": "mochrira@gmail.com"
         }
     ],
-    "minimum-stability": "dev",
     "repositories": {
         "mochrira/selvi-framework": {
             "type": "path",
