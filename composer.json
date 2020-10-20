@@ -1,6 +1,7 @@
 {
     "name": "mochrira/selvi-firebase",
     "description": "Package to integrate firebase with selvi framework",
+    "license": "MIT",
     "authors": [
         {
             "name": "mochrira",
