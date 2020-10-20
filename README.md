@@ -36,3 +36,18 @@ $ php index.php migrate main up
 ```
 
 Then, check your database, and you will see the default database structure for firebase project
+
+## Accept Authorization header
+
+To accept authorization header, add following lines to the end of your `.htaccess`
+
+```
+RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
+```
+Then add following to the top of your `index.php`
+
+```
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, authorization");
+```
