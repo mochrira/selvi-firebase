@@ -100,9 +100,7 @@ class Loader {
     }
 
     function validateRequest() {
-        if(self::$validateOrigin == true) {
-            $this->validateOrigin();
-        }
+        $this->validateOrigin();
         $this->validateToken();
         $this->validatePengguna();
         $this->validateAkses();
