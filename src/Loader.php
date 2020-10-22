@@ -100,7 +100,6 @@ class Loader {
     }
 
     function validateRequest() {
-        $this->validateOrigin();
         $this->validateToken();
         $this->validatePengguna();
         $this->validateAkses();
@@ -180,17 +179,18 @@ class Loader {
     }
 
     function validateLembaga() {
+        $idLembaga = null;
         if(isset($this->aksesAktif)) {
             $idLembaga = $this->aksesAktif->idLembaga;
             if(!$idLembaga) {
                 Throw new Exception('Pengguna tidak terdaftar pada lembaga manapun', 'firebase-auth/invalid-lembaga', 400);
             }
-        }
-
-        if(isset($this->originAktif)) {
-            $idLembaga = $this->originAktif->idLembaga;
-            if(!$idLembaga) {
-                Throw new Exception('Pengguna tidak terdaftar pada lembaga manapun', 'firebase-auth/invalid-lembaga', 400);
+        } else {
+            if(isset($this->originAktif)) {
+                $idLembaga = $this->originAktif->idLembaga;
+                if(!$idLembaga) {
+                    Throw new Exception('Pengguna tidak terdaftar pada lembaga manapun', 'firebase-auth/invalid-lembaga', 400);
+                }
             }
         }
 
