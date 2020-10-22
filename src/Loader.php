@@ -21,7 +21,6 @@ class Loader {
     private static $dbConfig;
     private static $firebaseFactory;
     private static $clientMigrations = [];
-    private static $validateOrigin = false;
     public static $dbPrefix = '';
 
     /**
@@ -36,13 +35,24 @@ class Loader {
      */
 
     public static function setup($config) {
-        self::$dbConfig = $config['dbConfig'];
-        Database::add(self::$dbConfig, 'main')->addMigration(__DIR__.'/../migrations');
-        self::$firebaseFactory = (new Factory())->withServiceAccount($config['serviceAccountFile']);
-        self::$validateOrigin = $config['validateOrigin'];
-        self::$dbPrefix = $config['dbPrefix'];
+        if(isset($config['dbConfig'])) {
+            self::$dbConfig = $config['dbConfig'];
+            Database::add(self::$dbConfig, 'main')->addMigration(__DIR__.'/../migrations');
+        }
+
+        if(isset($config['serviceAccountFile'])) {
+            self::$firebaseFactory = (new Factory())->withServiceAccount($config['serviceAccountFile']);
+        }
+
+        if(isset($config['dbPrefix'])) {
+            self::$dbPrefix = $config['dbPrefix'];
+        }
+
+        if(isset($config['handler'])) {
+            self::$handler = $config['handler'];
+        }
+
         Route::get('/auth', '\\Selvi\\Firebase\\Controllers\\AuthController@get');
-        self::$handler = $config['handler'];
     }
 
     public static function getDatabase() {
@@ -112,7 +122,7 @@ class Loader {
         $input = SelviFactory::load('input');
         $input_origin = str_replace('https://', '', str_replace('http://', '', $input->server('HTTP_ORIGIN')));
         $origin = SelviFactory::load(Origin::class, [], 'origin');
-        $this->originAktif = $origin->row([['origin', $input_origin]]);
+        $this->originAktif = $origin->row([['name', $input_origin]]);
         if(!$this->originAktif) {
             Throw new Exception('Origin not allowed to access this resources', 'app/invalid-origin', 400);
         }
@@ -172,12 +182,14 @@ class Loader {
     }
 
     function validateLembaga() {
-        if($this->aksesAktif) {
+        if(isset($this->aksesAktif)) {
             $idLembaga = $this->aksesAktif->idLembaga;
             if(!$idLembaga) {
                 Throw new Exception('Pengguna tidak terdaftar pada lembaga manapun', 'firebase-auth/invalid-lembaga', 400);
             }
-        } else {
+        }
+
+        if(isset($this->originAktif)) {
             $idLembaga = $this->originAktif->idLembaga;
             if(!$idLembaga) {
                 Throw new Exception('Pengguna tidak terdaftar pada lembaga manapun', 'firebase-auth/invalid-lembaga', 400);
