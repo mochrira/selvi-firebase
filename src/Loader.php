@@ -22,6 +22,7 @@ class Loader {
     private static $firebaseFactory;
     private static $clientMigrations = [];
     public static $dbPrefix = '';
+    public static $validateOrigin = false;
 
     /**
      * Config Structure
@@ -50,6 +51,10 @@ class Loader {
 
         if(isset($config['handler'])) {
             self::$handler = $config['handler'];
+        }
+
+        if(isset($config['validateOrigin'])) {
+            self::$validateOrigin = $config['validateOrigin'];
         }
 
         Route::get('/auth', '\\Selvi\\Firebase\\Controllers\\AuthController@get');
@@ -100,6 +105,7 @@ class Loader {
     }
 
     function validateRequest() {
+        $this->validateOrigin();
         $this->validateToken();
         $this->validatePengguna();
         $this->validateAkses();
@@ -116,12 +122,14 @@ class Loader {
     }
 
     function validateOrigin() {
-        $input = SelviFactory::load('input');
-        $input_origin = str_replace('https://', '', str_replace('http://', '', $input->server('HTTP_ORIGIN')));
-        $origin = SelviFactory::load(Origin::class, [], 'origin');
-        $this->originAktif = $origin->row([['name', $input_origin]]);
-        if(!$this->originAktif) {
-            Throw new Exception('Origin not allowed to access this resources', 'app/invalid-origin', 400);
+        if(self::$validateOrigin == true) {
+            $input = SelviFactory::load('input');
+            $input_origin = str_replace('https://', '', str_replace('http://', '', $input->server('HTTP_ORIGIN')));
+            $origin = SelviFactory::load(Origin::class, [], 'origin');
+            $this->originAktif = $origin->row([['name', $input_origin]]);
+            if(!$this->originAktif) {
+                Throw new Exception('Origin not allowed to access this resources', 'app/invalid-origin', 400);
+            }
         }
     }
 
