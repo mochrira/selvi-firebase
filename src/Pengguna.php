@@ -10,9 +10,9 @@ use Selvi\Firebase\Manager as FirebaseManager;
 class Pengguna {
 
     private static $schema;
-    private static $firebaseAuth;
-    private static $firebaseToken;
-    private static $penggunaAktif;
+    static $firebaseAuth;
+    static $firebaseToken;
+    static $penggunaAktif;
 
     static function setup($config = []) {
         if(isset($config['schema'])) {
