@@ -21,13 +21,15 @@ class Pengguna {
         }
     }
 
-    static function validateToken() {
-        try {
+    static function validateToken($token = null) {
+        if(!$token) {
             $input = Factory::load(Input::class, [], 'input');
             $token = $input->header('authorization');
             if(!$token) {
                 $token = $input->header('Authorization');
             }
+        }
+        try {
             self::$firebaseAuth = FirebaseManager::getFactory()->createAuth();
             self::$firebaseToken = self::$firebaseAuth->verifyIdToken($token);
         } catch(Exception $e) {
