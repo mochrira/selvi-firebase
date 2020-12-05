@@ -10,7 +10,7 @@
     ],
     "require": {
         "kreait/firebase-php": "^5.3",
-        "mochrira/selvi-framework": "^0.3.43"
+        "mochrira/selvi-framework": "^0.3.45"
     },
     "autoload": {
         "psr-4": {
